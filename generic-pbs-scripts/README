@@ -1,0 +1,62 @@
+Overview :
+----------
+
+The scripts runit-generic.sh and generic.pbs are examplse of how to 
+run jobs on itasca using the pbs queue. You will need to modify these
+scripts as described below before submitting them. When you are ready
+to run, just run runit-generic.sh as a bash script. 
+
+chomd gou+x runit-generic.sh
+./runit-generic.sh
+
+This will submit generic.pbs to the pbs queue. You can then watch your 
+script progress through the queue via the qstat command. 
+
+qstat -u $USER
+
+runit-generic.sh will compile your Hadoop program and then submit 
+generic.pbs to the pbs queue in order to run that program. 
+
+generic.pbs will copy your input data from /lustre/$USER to HDFS (local 
+/scratch space on each node). Make certain to request enough nodes to give 
+you enough disk space (remembering that each node has 85 GB of scratch 
+space). Once the data is copied your Hadoop program will be run, and
+output will be written to both generic.o and /lustre/$USER/myoutput
+
+Details : 
+---------
+
+Before submitting runit-generic.pbs You need to copy your .java program 
+to the directory where these scripts reside, and you need to copy your 
+input data to a directory in /lustre/$USER. You will then need to modify 
+these scripts to use your program and data. 
+
+generic.pbs will write out log and error files to your $HOME directory 
+(these files end with *EU and *OU). These only exist during the life of 
+your job, and you can view those to monitor the progress of your job. 
+Once your job ends these become generic.o and generic.e. Also note that 
+a hadoop directory will be kept in your $HOME directory (named as   
+hadoop.jobid.node.localdomain/) - this contains a great deal of log 
+information that can be useful in debugging. These are permament files 
+that you may want to delete from time to time (but do not delete while a 
+job is running). 
+
+You need to modify the following environment variables in generic.pbs :
+
+CLASSNAME
+LOCALINPUT
+
+and you need to modify the following in runit-generic.pbs :
+
+CLASSNAME
+
+Related Details : 
+-----------------
+
+Finally, and this is very important, you will need to include the 
+following line at the end of your ~/.bashrc file.
+
+export JAVA_HOME=/soft/java/jdk1.6.0_23
+
+Last modified by Ted Pedersen January 26, 2014
+
